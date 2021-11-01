@@ -26,10 +26,13 @@ export default function LoginScreen() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        auth.registerUser({
+        auth.loginUser({
             email: formData.get('email'),
             password: formData.get('password'),
-        }, store);
+        }, store).catch(error=>{
+            console.log(error.response.data.errorMessage);
+            alert(error.response.data.errorMessage);
+        });
     };
 
     return (

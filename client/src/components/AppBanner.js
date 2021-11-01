@@ -84,37 +84,77 @@ export default function AppBanner() {
         return <AccountCircle />;
     }
 
-    return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography                        
-                        variant="h4"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
-                    >
-                        <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>T<sup>5</sup>L</Link>
-                    </Typography>
-                    <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
-                        >
-                            { getAccountMenu(auth.loggedIn) }
-                        </IconButton>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            {
-                menu
-            }
-        </Box>
-    );
+    function getAccountUser() {
+        return auth.user.firstName[0].toUpperCase() + auth.user.lastName[0].toUpperCase();
+    }
+
+    if(!auth.loggedIn){
+        return (
+            <Box sx={{ flexGrow: 1 }}>
+                    <AppBar position="static">
+                        <Toolbar>
+                            <Typography                        
+                                variant="h4"
+                                noWrap
+                                component="div"
+                                sx={{ display: { xs: 'none', sm: 'block' } }}                        
+                            >
+                                <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>T<sup>5</sup>L</Link>
+                            </Typography>
+                            <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
+                            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                                <IconButton
+                                    size="large"
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls={menuId}
+                                    aria-haspopup="true"
+                                    onClick={handleProfileMenuOpen}
+                                    color="inherit"
+                                >
+                                    { getAccountMenu(auth.loggedIn) }
+                                </IconButton>
+                            </Box>
+                        </Toolbar>
+                    </AppBar>
+                {
+                    menu
+                }
+            </Box>
+        );
+    }else{
+        return (
+            <Box sx={{ flexGrow: 1 }}>
+                    <AppBar position="static">
+                        <Toolbar>
+                            <Typography                        
+                                variant="h4"
+                                noWrap
+                                component="div"
+                                sx={{ display: { xs: 'none', sm: 'block' } }}                        
+                            >
+                                <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>T<sup>5</sup>L</Link>
+                            </Typography>
+                            <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
+                            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                                <IconButton
+                                    size="large"
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls={menuId}
+                                    aria-haspopup="true"
+                                    onClick={handleProfileMenuOpen}
+                                    color="inherit"
+                                >
+                                    {getAccountUser()}
+                                </IconButton>
+                            </Box>
+                        </Toolbar>
+                    </AppBar>
+                {
+                    menu
+                }
+            </Box>
+        );
+    }
 }
