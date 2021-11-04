@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { useHistory } from 'react-router-dom'
 import Top5Item from './Top5Item.js'
 import List from '@mui/material/List';
 import { Typography } from '@mui/material'
@@ -11,6 +12,7 @@ import { GlobalStoreContext } from '../store/index.js'
 */
 function WorkspaceScreen() {
     const { store } = useContext(GlobalStoreContext);
+    store.history = useHistory();
 
     let editItems = "";
     if (store.currentList) {
