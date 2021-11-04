@@ -22,6 +22,7 @@ export const GlobalStoreActionType = {
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
+    LOAD_EMAIL_LIST: "LOAD_EMAIL_LIST",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
     UNMARK_LIST_FOR_DELETION: "UNMARK_LIST_FOR_DELETION",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
@@ -42,7 +43,8 @@ function GlobalStoreContextProvider(props) {
         newListCounter: 0,
         listNameActive: false,
         itemActive: false,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        ownerEmail: null
     });
     const history = useHistory();
 
@@ -62,7 +64,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: store.ownerEmail
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -73,7 +76,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: store.ownerEmail
                 })
             }
             // CREATE A NEW LIST
@@ -84,7 +88,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter + 1,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: store.ownerEmail
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -95,7 +100,19 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: payload.ownerEmail
+                });
+            }
+            case GlobalStoreActionType.LOAD_EMAIL_LIST: {
+                return setStore({
+                    idNamePairs: payload,
+                    currentList: null,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null,
+                    ownerEmail: payload.ownerEmail
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -106,7 +123,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: payload
+                    listMarkedForDeletion: payload,
+                    ownerEmail: store.ownerEmail
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -117,7 +135,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: store.ownerEmail
                 });
             }
             // UPDATE A LIST
@@ -128,7 +147,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: store.ownerEmail
                 });
             }
             // START EDITING A LIST ITEM
@@ -139,7 +159,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: true,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: store.ownerEmail
                 });
             }
             // START EDITING A LIST NAME
@@ -150,7 +171,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: true,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    ownerEmail: store.ownerEmail
                 });
             }
             default:
@@ -202,6 +224,11 @@ function GlobalStoreContextProvider(props) {
         history.push("/");
     }
 
+
+    store.getEmailOwn = function () {
+        return auth.user.email;
+    }
+
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
         let newListName = "Untitled" + store.newListCounter;
@@ -229,8 +256,12 @@ function GlobalStoreContextProvider(props) {
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
-    store.loadIdNamePairs = async function () {
-        const response = await api.getTop5ListPairs();
+
+    store.loadIdNamePairs = async function(email) {
+        let payload = {
+            ownerEmail: auth.user.email
+        };
+        const response = await api.getTop5ListPairs(payload);
         if (response.data.success) {
             let pairsArray = response.data.idNamePairs;
             storeReducer({
@@ -242,6 +273,7 @@ function GlobalStoreContextProvider(props) {
             console.log("API FAILED TO GET THE LIST PAIRS");
         }
     }
+
 
     // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
     // OF A LIST, WHICH INCLUDES USING A VERIFICATION MODAL. THE
@@ -257,6 +289,7 @@ function GlobalStoreContextProvider(props) {
                 payload: top5List
             });
         }
+        store.showDeleteListModal();
     }
 
     store.deleteList = async function (listToDelete) {
@@ -269,6 +302,19 @@ function GlobalStoreContextProvider(props) {
 
     store.deleteMarkedList = function () {
         store.deleteList(store.listMarkedForDeletion);
+        store.hideDeleteListModal();
+        store.unmarkListForDeletion();
+    }
+
+
+    store.showDeleteListModal = function() {
+        let modal = document.getElementById("delete-modal");
+        //console.log(modal.classList);
+        modal.classList.add("is-visible");
+    }
+    store.hideDeleteListModal = function() {
+        let modal = document.getElementById("delete-modal");
+        modal.classList.remove("is-visible");
     }
 
     store.unmarkListForDeletion = function () {
