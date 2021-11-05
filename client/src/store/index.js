@@ -258,14 +258,13 @@ function GlobalStoreContextProvider(props) {
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
 
     store.loadIdNamePairs = async function(emailOwner) {
-        console.log("loadIdNamePairs eeeeeeeee:",emailOwner );
+        //console.log("loadIdNamePairs eeeeeeeee:",emailOwner );
         let payload = {
             email: emailOwner
         };
-        console.log("loadIdNamePairs payload:",payload );
+        //console.log("loadIdNamePairs payload:",payload );
         const response = await api.getTop5ListPairs(payload);
         if (response.data.success) {
-            console.log(response.data.success);
             let pairsArray = response.data.idNamePairs;
             storeReducer({
                 type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
@@ -320,15 +319,14 @@ function GlobalStoreContextProvider(props) {
         modal.classList.remove("is-visible");
     }
 
-    store.showAlertListModal = function() {
-        let modal = document.getElementById("alert-modal");
-        //console.log(modal.classList);
-        modal.classList.add("is-visible");
-    }
-    store.hideAlertListModal = function() {
-        let modal = document.getElementById("alert-modal");
-        modal.classList.remove("is-visible");
-    }
+    // store.showAlertListModal = function() {
+    //     let modal = document.getElementById("alert-modal");
+    //     modal.classList.add("is-visible");
+    // }
+    // store.hideAlertListModal = function() {
+    //     let modal = document.getElementById("alert-modal");
+    //     modal.classList.remove("is-visible");
+    // }
 
     store.unmarkListForDeletion = function () {
         storeReducer({
@@ -405,12 +403,37 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
+    store.checkRedoStatus = function () {
+        if (tps.hasTransactionToRedo()) {
+            document.getElementById("redo-button").classList.remove("top5-button-disabled");
+            document.getElementById("redo-button").classList.add("top5-button");
+        } else {
+            document.getElementById("redo-button").classList.add("top5-button-disabled");
+            document.getElementById("redo-button").classList.remove("top5-button");
+        }
+
+        if (tps.hasTransactionToUndo()) {
+            document.getElementById("undo-button").classList.remove("top5-button-disabled");
+            document.getElementById("undo-button").classList.add("top5-button");
+        } else {
+            document.getElementById("undo-button").classList.add("top5-button-disabled");
+            document.getElementById("undo-button").classList.remove("top5-button");
+        }
+    }
+
+
     store.undo = function () {
-        tps.undoTransaction();
+        if(store.canUndo()){
+            tps.undoTransaction();
+            store.checkRedoStatus();
+        }
     }
 
     store.redo = function () {
-        tps.doTransaction();
+        if (tps.hasTransactionToRedo()) {
+            tps.doTransaction();
+            store.checkRedoStatus();
+        }
     }
 
     store.canUndo = function() {
