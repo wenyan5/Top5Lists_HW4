@@ -41,6 +41,7 @@ function ListCard(props) {
     }
 
     async function handleDeleteList(event, id) {
+        //console.log(store.listMarkedForDeletion.name);
         event.stopPropagation();
         store.markListForDeletion(id);
     }
