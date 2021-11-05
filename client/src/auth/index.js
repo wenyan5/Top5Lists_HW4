@@ -81,6 +81,9 @@ function AuthContextProvider(props) {
             history.push("/");
             //store.loadIdNamePairs();
             store.loadIdNamePairs(response.data.user.email);
+            return true;
+        }else{
+            return false;
         }
     }
 
@@ -97,7 +100,10 @@ function AuthContextProvider(props) {
             //store.loadIdNamePairs();
             console.log("login user:", response.data.user.email);
             store.loadIdNamePairs(response.data.user.email);
-
+            
+            return true;
+        }else{
+            return false;
         }
     }
 

@@ -15,7 +15,7 @@ const HomeScreen = () => {
 
     useEffect(() => {
         //store.loadIdNamePairs();
-        console.log("email in homescreen: ", store.getEmailOwn());
+        //console.log("email in homescreen: ", store.getEmailOwn());
         store.loadIdNamePairs(store.getEmailOwn());
         
     }, []);
