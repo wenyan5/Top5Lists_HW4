@@ -33,7 +33,7 @@ createTop5List = (req, res) => {
 }
 
 updateTop5List = async (req, res) => {
-    const body = req.body
+    const body = req.body;
     console.log("updateTop5List: " + JSON.stringify(body));
     if (!body) {
         return res.status(400).json({
@@ -109,7 +109,12 @@ getTop5Lists = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getTop5ListPairs = async (req, res) => {
-    await Top5List.find({ }, (err, top5Lists) => {
+    // console.log("hello!!!!!");
+    // console.log("params: ", req);
+    let email = req.query.email;
+    console.log("email: ", email);
+    //const{email } = req.body.email;
+    await Top5List.find({email}, (err, top5Lists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }

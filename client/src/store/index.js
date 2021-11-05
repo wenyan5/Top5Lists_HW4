@@ -194,7 +194,7 @@ function GlobalStoreContextProvider(props) {
                 response = await api.updateTop5ListById(top5List._id, top5List);
                 if (response.data.success) {
                     async function getListPairs(top5List) {
-                        response = await api.getTop5ListPairs();
+                        response = await api.getTop5ListPairs(store.getEmailOwn());
                         if (response.data.success) {
                             let pairsArray = response.data.idNamePairs;
                             storeReducer({
@@ -235,7 +235,7 @@ function GlobalStoreContextProvider(props) {
         let payload = {
             name: newListName,
             items: ["?", "?", "?", "?", "?"],
-            ownerEmail: auth.user.email
+            email: auth.user.email
         };
         const response = await api.createTop5List(payload);
         if (response.data.success) {
@@ -257,12 +257,15 @@ function GlobalStoreContextProvider(props) {
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
 
-    store.loadIdNamePairs = async function(email) {
+    store.loadIdNamePairs = async function(emailOwner) {
+        console.log("loadIdNamePairs eeeeeeeee:",emailOwner );
         let payload = {
-            ownerEmail: auth.user.email
+            email: emailOwner
         };
+        console.log("loadIdNamePairs payload:",payload );
         const response = await api.getTop5ListPairs(payload);
         if (response.data.success) {
+            console.log(response.data.success);
             let pairsArray = response.data.idNamePairs;
             storeReducer({
                 type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
@@ -303,7 +306,7 @@ function GlobalStoreContextProvider(props) {
     store.deleteMarkedList = function () {
         store.deleteList(store.listMarkedForDeletion);
         store.hideDeleteListModal();
-        store.unmarkListForDeletion();
+        //store.unmarkListForDeletion();
     }
 
 
@@ -314,6 +317,16 @@ function GlobalStoreContextProvider(props) {
     }
     store.hideDeleteListModal = function() {
         let modal = document.getElementById("delete-modal");
+        modal.classList.remove("is-visible");
+    }
+
+    store.showAlertListModal = function() {
+        let modal = document.getElementById("alert-modal");
+        //console.log(modal.classList);
+        modal.classList.add("is-visible");
+    }
+    store.hideAlertListModal = function() {
+        let modal = document.getElementById("alert-modal");
         modal.classList.remove("is-visible");
     }
 

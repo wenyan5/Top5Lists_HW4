@@ -23,7 +23,7 @@ getLoggedIn = async (req, res) => {
 }
 
 logoutUser = async (req, res) => {
-    console.log(req);
+    //console.log(req);
     res.clearCookie();
     return res.redirect('/');
 }

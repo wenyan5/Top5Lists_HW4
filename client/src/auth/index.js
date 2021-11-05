@@ -79,13 +79,14 @@ function AuthContextProvider(props) {
                 }
             })
             history.push("/");
-            store.loadIdNamePairs();
+            //store.loadIdNamePairs();
+            store.loadIdNamePairs(response.data.user.email);
         }
     }
 
     auth.loginUser = async function(userData, store) {
         const response = await api.loginUser(userData); 
-        if (response.status === 200) {
+        if (response.status === 200) { 
             authReducer({
                 type: AuthActionType.LOGGED_IN,
                 payload: {
@@ -93,12 +94,12 @@ function AuthContextProvider(props) {
                 }
             })
             history.push("/");
-            store.loadIdNamePairs();
+            //store.loadIdNamePairs();
+            console.log("login user:", response.data.user.email);
+            store.loadIdNamePairs(response.data.user.email);
+
         }
     }
-
-
-
 
     auth.logoutUser = async function(){
         authReducer({
