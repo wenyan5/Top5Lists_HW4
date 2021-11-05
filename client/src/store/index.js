@@ -194,8 +194,12 @@ function GlobalStoreContextProvider(props) {
                 response = await api.updateTop5ListById(top5List._id, top5List);
                 if (response.data.success) {
                     async function getListPairs(top5List) {
-                        response = await api.getTop5ListPairs(store.getEmailOwn());
+                        let payload = {
+                            email: store.getEmailOwn()
+                        };
+                        response = await api.getTop5ListPairs(payload);
                         if (response.data.success) {
+                            console.log(response.data);
                             let pairsArray = response.data.idNamePairs;
                             storeReducer({
                                 type: GlobalStoreActionType.CHANGE_LIST_NAME,
@@ -297,7 +301,7 @@ function GlobalStoreContextProvider(props) {
     store.deleteList = async function (listToDelete) {
         let response = await api.deleteTop5ListById(listToDelete._id);
         if (response.data.success) {
-            store.loadIdNamePairs();
+            store.loadIdNamePairs(store.getEmailOwn());
             history.push("/");
         }
     }
